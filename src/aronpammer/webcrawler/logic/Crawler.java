@@ -2,7 +2,7 @@ package aronpammer.webcrawler.logic;
 
 import aronpammer.webcrawler.exception.WrongInitialWebPageException;
 import aronpammer.webcrawler.misc.CrawlerConfig;
-import aronpammer.webcrawler.misc.KeyValue;
+import aronpammer.webcrawler.misc.SiteInformation;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -17,7 +17,7 @@ import java.util.Queue;
 public class Crawler {
 
     HashMap<String, String> redirections;
-    Queue<KeyValue<String, String>> siteQueue;
+    Queue<SiteInformation> siteQueue;
 
     private CrawlerConfig crawlerConfig;
 
@@ -29,7 +29,7 @@ public class Crawler {
     }
 
     public String retreiveSiteAdresses() throws WrongInitialWebPageException {
-        siteQueue.add(new KeyValue<>(crawlerConfig.getRawBaseUrl(), null));
+        siteQueue.add(new SiteInformation(crawlerConfig.getRawBaseUrl(), null, 0));
         crawlSite();
         return crawlerConfig.getAddressStorer().getPages();
     }
@@ -37,9 +37,13 @@ public class Crawler {
     private void crawlSite() throws WrongInitialWebPageException {
 
         while(siteQueue.size() != 0) {
-            KeyValue<String, String> pair = siteQueue.poll();
-            String currentPath = pair.getKey();
-            String parentPath = pair.getValue();
+
+            SiteInformation siteInformation = siteQueue.poll();
+            String currentPath = siteInformation.getSite();
+            String parentPath = siteInformation.getParentSite();
+            System.out.println(siteInformation.getDepth());
+            if(siteInformation.getDepth() > crawlerConfig.getMaxDepth())
+                continue;
             //check if there was a redirection from this url to another url before
             if (redirections.containsKey(currentPath)) {
                 //if yes, then change the currentPath to the redirected site's url
@@ -94,7 +98,8 @@ public class Crawler {
                     System.out.println(urls);
                     for (URL url : urls) {
                         String urlString = url.toString();
-                        siteQueue.add(new KeyValue<>(urlString, responseURLString));
+
+                        siteQueue.add(new SiteInformation(urlString, responseURLString, siteInformation.getDepth() + 1));
                     }
                 }
 

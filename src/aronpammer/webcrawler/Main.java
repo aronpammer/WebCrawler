@@ -12,15 +12,9 @@ import java.util.HashMap;
 public class Main {
 
     public static void main(String[] args) {
-        /*HashMap<String, String> asd = new HashMap<>();
-        String aaa = "asd";
-        String bbb = "asd";
-        asd.put(aaa, "asd");
-        System.out.println(asd.get(bbb));
-        if(true)
-            return;*/
+       
         try {
-            CrawlerConfig crawlerConfig = new CrawlerConfig("http://example.org/", new HashAddressStorer(), new QuickParser(), "");
+            CrawlerConfig crawlerConfig = new CrawlerConfig("http://gocardless.com/", new HashAddressStorer(), new QuickParser(), "", 1);
             Crawler crawler = new Crawler(crawlerConfig);
             crawler.retreiveSiteAdresses();
         } catch (WrongInitialWebPageException e) {
