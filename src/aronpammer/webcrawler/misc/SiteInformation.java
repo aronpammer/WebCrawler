@@ -5,12 +5,14 @@ public class SiteInformation
 {
     private final String site;
     private final String parentSite;
-    private final int depth;
+    private final int currentDepth;
+    private String contentType;
 
     public SiteInformation(String site, String parentSite, int depth) {
         this.site = site;
         this.parentSite = parentSite;
-        this.depth = depth;
+        this.currentDepth = depth;
+        this.contentType = null;
     }
 
     public String getSite() {
@@ -21,7 +23,7 @@ public class SiteInformation
         return parentSite;
     }
 
-    public int getDepth() {
-        return depth;
+    public int getCurrentDepth() {
+        return currentDepth;
     }
 }

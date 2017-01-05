@@ -8,9 +8,9 @@ import java.util.HashSet;
  */
 public class WebPageContainer {
 
-    HashSet<String> assetHashSet;
+    private HashSet<String> assetHashSet;
 
-    public WebPageContainer(String absolutePath) {
+    public WebPageContainer() {
         this.assetHashSet = new HashSet<>();
     }
 

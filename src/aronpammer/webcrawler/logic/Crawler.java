@@ -37,61 +37,56 @@ public class Crawler {
     private void crawlSite() throws WrongInitialWebPageException {
 
         while(siteQueue.size() != 0) {
-
             SiteInformation siteInformation = siteQueue.poll();
-            String currentPath = siteInformation.getSite();
-            String parentPath = siteInformation.getParentSite();
-            System.out.println(siteInformation.getDepth());
-            if(siteInformation.getDepth() > crawlerConfig.getMaxDepth())
-                continue;
+            String currentSite = siteInformation.getSite();
+            String parentSite = siteInformation.getParentSite();
+
             //check if there was a redirection from this url to another url before
-            if (redirections.containsKey(currentPath)) {
-                //if yes, then change the currentPath to the redirected site's url
-                currentPath = redirections.get(currentPath);
+            if (redirections.containsKey(currentSite)) {
+                //change the currentSite to the redirected site's url (performance boost)
+                currentSite = redirections.get(currentSite);
             }
 
             //check if we already visited this url
-            if (this.handleUrlExists(currentPath, parentPath))
+            if (this.handleUrlExists(currentSite, parentSite))
                 continue;
 
             try {
-                Connection connection = Jsoup.connect(currentPath).userAgent(crawlerConfig.getUserAgent());
+                Connection connection = Jsoup.connect(currentSite).userAgent(crawlerConfig.getUserAgent());
 
                 //first we get just the headers to check the content type
                 Connection.Response response = connection.method(Connection.Method.HEAD).ignoreContentType(true).execute();
                 URL responseURL = response.url();
                 String responseURLString = responseURL.toString();
 
-                if (didRedirect(currentPath, responseURLString)) {
-                    System.out.println("redirection happened");
-                    System.out.println(currentPath);
-                    System.out.println(responseURLString);
-
-                    redirections.put(currentPath, responseURLString);
-
+                //were there any redirects while getting the response?
+                if (didRedirect(currentSite, responseURLString)) {
+                    redirections.put(currentSite, responseURLString);
                     //check if we already visited the redirected path
-                    if (this.handleUrlExists(responseURLString, parentPath))
+                    if (this.handleUrlExists(responseURLString, parentSite))
                         continue;
                 }
 
-                //in case it is not a html file then we classify it as an asset
+                //in case it is not an html file then we classify it as an asset
                 if (response.contentType() != null && !response.contentType().contains("text/html")) {
-                    if (parentPath == null) throw new WrongInitialWebPageException();
+                    if (parentSite == null) throw new WrongInitialWebPageException();
 
-                    System.out.println(currentPath);
-                    System.out.println(parentPath);
-                    crawlerConfig.getAddressStorer().storeAsset(parentPath, currentPath);
+                    //using (maxdepth + 1) here to be able to fetch the assets of a certain page
+                    if(siteInformation.getCurrentDepth() > crawlerConfig.getMaxDepth() + 1)
+                        continue;
+                    System.out.println(currentSite);
+                    crawlerConfig.getAddressStorer().storeAsset(parentSite, currentSite);
                 } else {
                     //here using getAuthority instead of getHost could differentiate between sites with different port numbers.
                     //for more results getHost is used here.
-                    if (!responseURL.getHost().equals(crawlerConfig.getBaseUrl().getHost())) {
+                    if (siteInformation.getCurrentDepth() > crawlerConfig.getMaxDepth()
+                            || !responseURL.getHost().equals(crawlerConfig.getBaseUrl().getHost())) {
                         continue;
                     }
-                    System.out.println(responseURLString);
                     //getting the actual html
                     response = connection.method(Connection.Method.GET).ignoreContentType(false).execute();
                     Document htmlDocument = response.parse();
-                    System.out.println("storing: " + responseURLString);
+
                     crawlerConfig.getAddressStorer().storeWebPage(responseURLString);
 
                     List<URL> urls = crawlerConfig.getParser().getUrls(htmlDocument);
@@ -99,15 +94,12 @@ public class Crawler {
                     for (URL url : urls) {
                         String urlString = url.toString();
 
-                        siteQueue.add(new SiteInformation(urlString, responseURLString, siteInformation.getDepth() + 1));
+                        siteQueue.add(new SiteInformation(urlString, responseURLString, siteInformation.getCurrentDepth() + 1));
                     }
                 }
 
             } catch (IOException e) {
-
-                System.out.println("error:" + currentPath);
-                e.printStackTrace();
-                crawlerConfig.getAddressStorer().storeError(currentPath);
+                crawlerConfig.getAddressStorer().storeError(currentSite);
             }
         }
 
