@@ -3,7 +3,7 @@ package aronpammer.webcrawler.misc;
 
 public class SiteInformation
 {
-    private final String site;
+    private String site;
     private final String parentSite;
     private final int currentDepth;
     private String contentType;
@@ -17,6 +17,11 @@ public class SiteInformation
 
     public String getSite() {
         return site;
+    }
+
+    public void setSite(String site)
+    {
+        this.site = site;
     }
 
     public String getParentSite() {

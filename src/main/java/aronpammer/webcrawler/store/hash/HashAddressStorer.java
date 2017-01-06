@@ -26,14 +26,14 @@ public class HashAddressStorer implements AddressStorerInterface
     @Override
     public void storeWebPage(String webPageUrl) {
         webPageHashMap.put(webPageUrl, new WebPageContainer());
-        System.out.println("webpage: " + webPageHashMap.size());
+        System.out.println("webpage: " + webPageUrl);
     }
 
     @Override
     public void storeAsset(String webPageUrl, String assetUrl) {
         webPageHashMap.get(webPageUrl).addAsset(assetUrl);
         assetHashSet.add(assetUrl);
-        System.out.println("asset: " + assetHashSet.size());
+        //System.out.println("asset: " + assetHashSet.size());
     }
 
     @Override

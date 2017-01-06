@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 public class Main {
 
     public static void main(String[] args) {
+
         if(args.length < 3)
         {
             System.out.println("Missing parameters");

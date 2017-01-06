@@ -1,5 +1,6 @@
 package aronpammer.webcrawler.parser;
 
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -8,30 +9,29 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 public class QuickParser implements ParserInterface {
     @Override
-    public List<URL> getUrls(Document document) {
+    public String[] getUrls(Document document) {
         Elements links = document.select("a[href]");
         Elements media = document.select("[src]");
         Elements imports = document.select("link[href]");
         String[] urls = new String[links.size() + media.size() + imports.size()];
         int counter = 0;
         for (Element link : links) {
-            urls[counter++] = link.attr("abs:href");
+            urls[counter++] = link.absUrl("href");
         }
         for (Element src : media) {
-            urls[counter++] = src.attr("abs:src");
+            urls[counter++] = src.absUrl("src");
         }
         for (Element link : imports) {
-            urls[counter++] = link.attr("abs:href");
+            urls[counter++] = link.absUrl("href");
         }
 
-        return getUrls(urls);
+        return urls;
     }
 
-    public ArrayList<URL> getUrls(String[] urls)
+    public String[] urlValidityCheck(String[] urls)
     {
         ArrayList<URL> urlList = new ArrayList<>();
         for (String url : urls)
@@ -40,12 +40,11 @@ public class QuickParser implements ParserInterface {
             {
                 URL realUrl = new URL(url);
                 realUrl.toURI(); // url format check
-
                 urlList.add(realUrl);
             } catch (MalformedURLException | URISyntaxException e) {
                 //ignore
             }
         }
-        return  urlList;
+        return (String[]) urlList.toArray();
     }
 }
