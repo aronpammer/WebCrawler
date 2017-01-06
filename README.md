@@ -4,18 +4,18 @@ This Web Crawler is a simple java application to crawl a given domain without cr
 
 ### Installation - UNIX
   - Clone/Download project
-  - Make sure that the correct JAVA version is installed on your computer
+  - Make sure that the correct java version (1.8+) and gradle (2.14+) is installed on your computer
   - In terminal go into the project root folder
-  - 1, Create a JAR file or
+  - 1, Create a .jar file or
   - 2, Run the prebuilt (root folder, name: WebCrawler.jar) JAR file
 
 #### 1, Creating a JAR file
   - In the root folder create the jar file then move it to the current (project root) folder:
+
 ```sh
-$ gradle build
+$ gradle jar
 $ mv build/libs/WebCrawler-1.2.jar ./WebCrawler.jar
 ```
-  - After this  
 
 #### 2, Running the created/prebuilt jar file (make sure you are still in the project root folder)
 ```sh
