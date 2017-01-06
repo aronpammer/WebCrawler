@@ -24,6 +24,9 @@ example:
 $ java -jar <name of .jar file> "http://www.example.com/" "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36" 2
 ```
 
+### Flowchart
+![flowchart](https://raw.githubusercontent.com/velvetz7/WebCrawler/master/flowchart.png)
+
 ### Project decisions
 The first thing I had in mind while developing is to be as object oriented as possible and to be able to expand the application later on. 
 The current project uses HashMaps and HashSets to efficiently store the informations about the websites, 
