@@ -1,15 +1,36 @@
 # Web Crawler
 
-This Web Crawler is a simple java application to crawl a given domain without crossing subdomains. (there are some edge cases however, see later)
+This Web Crawler is a simple java application to crawl a given domain without crossing subdomains.
+Output: in JSON format listing the URLs of every static asset, grouped by page
+For example:
+```sh
+[
+  {
+    "url": "http://www.example.org",
+    "assets": [
+      "http://www.example.org/image.jpg",
+      "http://www.example.org/script.js"
+    ]
+  },
+  {
+    "url": "http://www.example.org/about",
+    "assets": [
+      "http://www.example.org/company_photo.jpg",
+      "http://www.example.org/script.js"
+    ]
+  },
+  ..
+]
+```
 
 ### Installation - UNIX
   - Clone/Download project
   - Make sure that the correct java version (1.8+) is installed on your computer
   - In terminal go into the project root folder
-  - 1, Create a .jar file or (you need to have gradle [2.14+])
-  - 2, Run the prebuilt (root folder, name: WebCrawler.jar) JAR file
+  - [Create a .jar file (you need to have gradle [2.14+])](#creating-a-jar-file) or
+  - [Run the prebuilt (root folder, name: WebCrawler.jar) JAR file](#running-the-createdprebuilt-jar-file-make-sure-you-are-still-in-the-project-root-folder)
 
-#### 1, Creating a JAR file
+#### Creating a JAR file
   - In the root folder create the jar file then move it to the current (project root) folder:
 
 ```sh
@@ -17,7 +38,7 @@ $ gradle jar
 $ mv build/libs/WebCrawler-1.2.jar ./WebCrawler.jar
 ```
 
-#### 2, Running the created/prebuilt jar file (make sure you are still in the project root folder)
+#### Running the created/prebuilt jar file (make sure you are still in the project root folder)
 ```sh
 $ java -jar <name of .jar file> <website> <useragent> <maxdepth>
 example:
@@ -42,7 +63,7 @@ This proved to be efficient, however it can miss a few URL-s if they aren't prop
 
 #### How to tell if the URL points to an asset or an html site?
 Let's say there is this URL on the website: goo.gl/abcd.
-**There is no way to know just by looking at the url whether this is an *asset* or an *html site*.**
+**There is no way to know whether this is an *asset* or an *html site* just by looking at the url.**
 
 To find out the I used the jsoup library that handles all the redirects and gets the final URL. (To save some bandwidth I also made sure to only send HEAD requests.)
 
