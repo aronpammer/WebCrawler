@@ -9,9 +9,9 @@ import java.util.Map;
 
 public class HashAddressStorer implements AddressStorerInterface
 {
-    HashMap<String, WebPageContainer> webPageHashMap;
-    HashSet<String> assetHashSet; // for faster duplicate detection
-    HashSet<String> errorHashSet;
+    private HashMap<String, WebPageContainer> webPageHashMap;
+    private HashSet<String> assetHashSet; // for faster duplicate detection
+    private HashSet<String> errorHashSet;
 
     public HashAddressStorer()
     {
@@ -23,12 +23,14 @@ public class HashAddressStorer implements AddressStorerInterface
     @Override
     public void storeWebPage(String webPageUrl) {
         webPageHashMap.put(webPageUrl, new WebPageContainer());
+        System.out.println("webpage: " + webPageHashMap.size());
     }
 
     @Override
     public void storeAsset(String webPageUrl, String assetUrl) {
         webPageHashMap.get(webPageUrl).addAsset(assetUrl);
         assetHashSet.add(assetUrl);
+        System.out.println("asset: " + assetHashSet.size());
     }
 
     @Override
