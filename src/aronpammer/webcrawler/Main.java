@@ -7,7 +7,6 @@ import aronpammer.webcrawler.parser.QuickParser;
 import aronpammer.webcrawler.store.hash.HashAddressStorer;
 
 import java.net.MalformedURLException;
-import java.util.HashMap;
 
 public class Main {
 
@@ -23,7 +22,7 @@ public class Main {
             int maxDepth = Integer.parseInt(args[2]);
             CrawlerConfig crawlerConfig = new CrawlerConfig(website, new HashAddressStorer(), new QuickParser(), userAgent, maxDepth);
             Crawler crawler = new Crawler(crawlerConfig);
-            String result = crawler.retreiveSiteAdresses();
+            String result = crawler.retrieveSiteAddresses();
             System.out.println(result);
         } catch (WrongInitialWebPageException e) {
             System.out.println("The initial url was not pointing to an html");

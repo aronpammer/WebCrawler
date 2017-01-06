@@ -15,39 +15,34 @@ import java.util.List;
 import java.util.Queue;
 
 public class Crawler {
-
-    HashMap<String, String> redirections;
-    Queue<SiteInformation> siteQueue;
-
     private CrawlerConfig crawlerConfig;
 
     public Crawler(CrawlerConfig crawlerConfig)
     {
         this.crawlerConfig = crawlerConfig;
-        this.redirections = new HashMap<>();
-        this.siteQueue = new LinkedList<>();
     }
 
-    public String retreiveSiteAdresses() throws WrongInitialWebPageException {
-        siteQueue.add(new SiteInformation(crawlerConfig.getRawBaseUrl(), null, 0));
+    public String retrieveSiteAddresses() throws WrongInitialWebPageException {
+        crawlerConfig.getAddressStorer().storeQueue(new SiteInformation(crawlerConfig.getRawBaseUrl(), null, 0));
         crawlSite();
         return crawlerConfig.getAddressStorer().getPages();
     }
 
-    private void crawlSite() throws WrongInitialWebPageException {
+    private String getContentType(Connection.Response response)
+    {
+        return null;
+    }
 
-        while(siteQueue.size() != 0) {
-            SiteInformation siteInformation = siteQueue.poll();
+    private void crawlSite() throws WrongInitialWebPageException {
+        SiteInformation siteInformation;
+        while((siteInformation = crawlerConfig.getAddressStorer().getQueue()) != null) {
             String currentSite = siteInformation.getSite();
             String parentSite = siteInformation.getParentSite();
 
-            //check if there was a redirection from this url to another url before
-            if (redirections.containsKey(currentSite)) {
-                //change the currentSite to the redirected site's url (performance boost)
-                currentSite = redirections.get(currentSite);
-            }
+            // get if there was a redirection from this url to another url before
+            currentSite = crawlerConfig.getAddressStorer().getRedirection(currentSite);
 
-            //check if we already visited this url
+            //check if we have already visited this url
             if (this.handleUrlExists(currentSite, parentSite))
                 continue;
 
@@ -61,8 +56,8 @@ public class Crawler {
 
                 //were there any redirects while getting the response?
                 if (didRedirect(currentSite, responseURLString)) {
-                    redirections.put(currentSite, responseURLString);
-                    //check if we already visited the redirected path
+                    crawlerConfig.getAddressStorer().storeRedirection(currentSite, responseURLString);
+                    //check if we have already visited the redirected path
                     if (this.handleUrlExists(responseURLString, parentSite))
                         continue;
                 }
@@ -71,14 +66,15 @@ public class Crawler {
                 if (response.contentType() != null && !response.contentType().contains("text/html")) {
                     if (parentSite == null) throw new WrongInitialWebPageException();
 
-                    //using (maxdepth + 1) here to be able to fetch the assets of a certain page
+                    //using (maxdepth + 1) here to be able to fetch the assets of a certain page that's depth is maxdepth
                     if(siteInformation.getCurrentDepth() > crawlerConfig.getMaxDepth() + 1)
                         continue;
                     System.out.println(currentSite);
                     crawlerConfig.getAddressStorer().storeAsset(parentSite, currentSite);
                 } else {
-                    //here using getAuthority instead of getHost could differentiate between sites with different port numbers.
-                    //for more results getHost is used here.
+                    //making sure that we are still in the same domain
+                    //NOTE: here using getAuthority instead of getHost could differentiate between sites with different port numbers.
+                    //      for more results getHost is used here.
                     if (siteInformation.getCurrentDepth() > crawlerConfig.getMaxDepth()
                             || !responseURL.getHost().equals(crawlerConfig.getBaseUrl().getHost())) {
                         continue;
@@ -94,7 +90,7 @@ public class Crawler {
                     for (URL url : urls) {
                         String urlString = url.toString();
 
-                        siteQueue.add(new SiteInformation(urlString, responseURLString, siteInformation.getCurrentDepth() + 1));
+                        crawlerConfig.getAddressStorer().storeQueue(new SiteInformation(urlString, responseURLString, siteInformation.getCurrentDepth() + 1));
                     }
                 }
 
