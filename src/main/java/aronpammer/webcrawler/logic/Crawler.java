@@ -8,8 +8,7 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,10 +26,7 @@ public class Crawler {
         crawlerConfig.getAddressStorer().storeWebPage(new SiteInformation(crawlerConfig.getRawBaseUrl(), null, 0));
         SiteInformation siteInformation;
         while ((siteInformation = crawlerConfig.getAddressStorer().getNextInWebPageQueue()) != null) {
-            System.out.println(crawlerConfig.getAddressStorer().getUrlJson(false));
             try {
-                System.out.println("Parsing website: " + siteInformation.getSite());
-
                 parseWebsite(siteInformation);
             } catch (IOException e) {
                 logger.log(Level.SEVERE, "Error while getting url: " + siteInformation.getSite() + " " + e.getMessage());
@@ -112,8 +108,15 @@ public class Crawler {
         String[] urls = crawlerConfig.getParser().getUrls(response.parse());
 
         for (String url : urls) {
-            if(crawlerConfig.isOptimistUrlChecking() && !crawlerConfig.getBaseUrl().getHost().equals(getHostName(url)))
+            URL realURL = getURL(url);
+            if(realURL == null)
                 continue;
+
+            if(crawlerConfig.isOptimistUrlChecking() && !crawlerConfig.getBaseUrl().getHost().equals(realURL.getHost()))
+                continue;
+
+            if(!crawlerConfig.isKeepHashtags())
+                url = url.replace("#" + realURL.getRef(), "");
 
             if (this.handleUrlExists(url, siteInformation.getSite()))
                 continue;
@@ -153,12 +156,11 @@ public class Crawler {
         return Jsoup.connect(url).method(Connection.Method.HEAD).userAgent(crawlerConfig.getUserAgent()).timeout(crawlerConfig.getTimeout());
     }
 
-    private String getHostName(String url)
+    private URL getURL(String url)
     {
         try {
-            URI uri = new URI(url);
-            return uri.getHost();
-        } catch (URISyntaxException e) {
+            return new URL(url);
+        } catch (MalformedURLException e) {
             return null;
         }
     }

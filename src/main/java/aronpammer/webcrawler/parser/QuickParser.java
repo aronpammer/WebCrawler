@@ -30,21 +30,4 @@ public class QuickParser implements ParserInterface {
 
         return urls;
     }
-
-    public String[] urlValidityCheck(String[] urls)
-    {
-        ArrayList<URL> urlList = new ArrayList<>();
-        for (String url : urls)
-        {
-            try
-            {
-                URL realUrl = new URL(url);
-                realUrl.toURI(); // url format check
-                urlList.add(realUrl);
-            } catch (MalformedURLException | URISyntaxException e) {
-                //ignore
-            }
-        }
-        return (String[]) urlList.toArray();
-    }
 }

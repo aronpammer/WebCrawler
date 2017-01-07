@@ -3,6 +3,7 @@ package aronpammer.webcrawler;
 import aronpammer.webcrawler.exception.WrongInitialWebPageException;
 import aronpammer.webcrawler.logic.Crawler;
 import aronpammer.webcrawler.misc.CrawlerConfig;
+import aronpammer.webcrawler.parser.ComplexParser;
 import aronpammer.webcrawler.parser.QuickParser;
 import aronpammer.webcrawler.store.hash.HashAddressStorer;
 import org.apache.commons.cli.*;
@@ -22,6 +23,7 @@ public class Main {
         options.addOption("timeout", true, "Timeout to use while loading the websites");
         options.addOption("verbose", false, "Output log messages");
         options.addOption("optimistic", false, "Optimistic URL checking; don't add URLs to the queue that isn't in the same domain/subdomain");
+        options.addOption("keephashtags", false, "An url with a different hashtag at the end is the same url");
         return options;
     }
 
@@ -35,7 +37,8 @@ public class Main {
             int maxDepth = 5;
             int timeout = 3000;
 
-            boolean optimistUrlChecking = cmd.hasOption("optimist");
+            boolean optimistUrlChecking = cmd.hasOption("optimistic");
+            boolean keepHashtags = cmd.hasOption("keephashtags");
 
             if(cmd.hasOption("website"))
                 website = cmd.getOptionValue("website");
@@ -58,7 +61,7 @@ public class Main {
                 globalLogger.setLevel(java.util.logging.Level.OFF);
             }
 
-            CrawlerConfig crawlerConfig = new CrawlerConfig(website, new HashAddressStorer(), new QuickParser(), userAgent, optimistUrlChecking, maxDepth, timeout);
+            CrawlerConfig crawlerConfig = new CrawlerConfig(website, new HashAddressStorer(), new ComplexParser(), userAgent, optimistUrlChecking, keepHashtags, maxDepth, timeout);
             Crawler crawler = new Crawler(crawlerConfig);
             String result = crawler.retrieveSiteAddresses();
             System.out.println(result);
