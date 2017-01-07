@@ -27,8 +27,8 @@ For example:
   - Clone/Download project
   - Make sure that the correct java version (1.8+) is installed on your computer
   - In terminal go into the project root folder
-  - [Create a .jar file (you need to have gradle [2.14+])](#creating-a-jar-file) or
-  - [Run the prebuilt (root folder, name: WebCrawler.jar) JAR file](#running-the-createdprebuilt-jar-file-make-sure-you-are-still-in-the-project-root-folder)
+  - [Create a .jar file (you need to have gradle [2.14+])](#creating-a-jar-file) and/or
+  - [Run the created/prebuilt JAR file](#running-the-createdprebuilt-jar-file-make-sure-you-are-still-in-the-project-root-folder)
 
 #### Creating a JAR file
   - In the root folder create the jar file then move it to the current (project root) folder:
@@ -40,9 +40,15 @@ $ mv build/libs/WebCrawler-1.2.jar ./WebCrawler.jar
 
 #### Running the created/prebuilt jar file (make sure you are still in the project root folder)
 ```sh
-$ java -jar <name of .jar file> <website> <useragent> <maxdepth>
+$ java -jar <name of .jar file> <flags>
+Flags:
+-website <url of the website> - required
+-useragent <user agent to use to load the websites> - optional
+-maxdepth <the maximum level of depth while crawling> - optional (default: 5)
+-timeout <the timeout in milliseconds for loading the websites> - optional (default: 5000)
+-verbose - print out log messages - optional
 example:
-$ java -jar <name of .jar file> "http://www.example.com/" "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36" 2
+$ java -jar <name of .jar file> -website "http://www.example.com/" -useragent "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36" -maxdepth 2 -timout 3000 -verbose
 ```
 
 ### Flowchart

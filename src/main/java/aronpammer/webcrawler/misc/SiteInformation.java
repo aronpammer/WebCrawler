@@ -6,14 +6,17 @@ public class SiteInformation
     private String site;
     private final String parentSite;
     private final int currentDepth;
-    private String contentType;
 
     public SiteInformation(String site, String parentSite, int depth) {
         this.site = site;
         this.parentSite = parentSite;
         this.currentDepth = depth;
-        this.contentType = null;
     }
+    public SiteInformation(String site, String parentSite)
+    {
+        this(site, parentSite, 0);
+    }
+
 
     public String getSite() {
         return site;

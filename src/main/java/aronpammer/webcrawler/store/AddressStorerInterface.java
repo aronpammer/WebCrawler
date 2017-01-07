@@ -6,22 +6,32 @@ public interface AddressStorerInterface {
 
     enum UrlType { Unknown, WebPage, Error, Asset }
 
-    void storeWebPage(String webPageUrl);
+    void storeWebPage(SiteInformation siteInformation);
 
-    void storeAsset(String webPageUrl, String assetUrl);
+    void storeAsset(SiteInformation siteInformation);
 
-    void storeError(String currentPath);
+    void storeError(SiteInformation siteInformation);
 
     void storeRedirection(String from, String to);
 
     void storeQueue(SiteInformation siteInformation);
 
-    SiteInformation getQueue();
+    int getUrlQueueCount();
+
+    int getUrlCount();
+
+    int getWebPageQueueCount();
+
+    SiteInformation getNextInUrlQueue();
+
+    SiteInformation getNextInWebPageQueue();
 
     String getRedirection(String from);
 
-    String getPages();
+    String getUrlJson(boolean includeEmptyAsset);
 
     UrlType doesUrlExists(String url);
+
+
 
 }

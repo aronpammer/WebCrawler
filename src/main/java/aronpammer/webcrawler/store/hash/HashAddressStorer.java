@@ -5,14 +5,18 @@ import aronpammer.webcrawler.store.AddressStorerInterface;
 import com.google.gson.*;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class HashAddressStorer implements AddressStorerInterface
 {
+    private static final Logger logger = Logger.getLogger("HashAddressStorer");
     private HashMap<String, WebPageContainer> webPageHashMap;
     private HashSet<String> assetHashSet; // for faster duplicate detection
     private HashSet<String> errorHashSet;
     private HashMap<String, String> redirections;
-    private Queue<SiteInformation> siteQueue;
+    private Queue<SiteInformation> urlQueue;
+    private Queue<SiteInformation> webPageQueue;
 
     public HashAddressStorer()
     {
@@ -20,29 +24,42 @@ public class HashAddressStorer implements AddressStorerInterface
         assetHashSet = new HashSet<>();
         errorHashSet = new HashSet<>();
         redirections = new HashMap<>();
-        siteQueue = new LinkedList<>();
+        urlQueue = new LinkedList<>();
+        webPageQueue = new LinkedList<>();
     }
 
     @Override
-    public void storeWebPage(String webPageUrl) {
+    public void storeWebPage(SiteInformation siteInformation) {
+        String webPageUrl = siteInformation.getSite();
+
         webPageHashMap.put(webPageUrl, new WebPageContainer());
-        System.out.println("webpage: " + webPageUrl);
+        webPageQueue.add(siteInformation);
+        logger.log(Level.INFO, "Storing webpage: " + webPageUrl);
     }
 
     @Override
-    public void storeAsset(String webPageUrl, String assetUrl) {
+    public void storeAsset(SiteInformation siteInformation) {
+        String webPageUrl = siteInformation.getParentSite();
+        String assetUrl = siteInformation.getSite();
+
+        logger.log(Level.INFO, "Storing asset, webpageurl: " + webPageUrl + " asseturl: " + assetUrl);
         webPageHashMap.get(webPageUrl).addAsset(assetUrl);
-        assetHashSet.add(assetUrl);
-        //System.out.println("asset: " + assetHashSet.size());
+        if(!assetHashSet.contains(assetUrl)) {
+            assetHashSet.add(assetUrl);
+        }
     }
 
     @Override
-    public void storeError(String currentPath) {
-        errorHashSet.add(currentPath);
+    public void storeError(SiteInformation siteInformation) {
+        String currentUrl = siteInformation.getSite();
+
+        logger.log(Level.INFO, "Storing error: " + currentUrl);
+        errorHashSet.add(currentUrl);
     }
 
     @Override
     public void storeRedirection(String from, String to) {
+        logger.log(Level.INFO, "Storing redirection, from: " + from + " to: " + to);
         redirections.put(from, to);
     }
 
@@ -59,21 +76,42 @@ public class HashAddressStorer implements AddressStorerInterface
 
     @Override
     public void storeQueue(SiteInformation siteInformation) {
-        siteQueue.add(siteInformation);
+        urlQueue.add(siteInformation);
     }
 
     @Override
-    public SiteInformation getQueue() {
-        return siteQueue.poll();
+    public int getUrlQueueCount() {
+        return urlQueue.size();
+    }
+
+    @Override
+    public int getUrlCount() {
+        return assetHashSet.size() + errorHashSet.size() + webPageHashMap.size();
+    }
+
+    @Override
+    public int getWebPageQueueCount() {
+        return webPageQueue.size();
+    }
+
+    @Override
+    public SiteInformation getNextInUrlQueue() {
+        return urlQueue.poll();
+    }
+
+    @Override
+    public SiteInformation getNextInWebPageQueue() {
+        return webPageQueue.poll();
     }
 
 
-
     @Override
-    public String getPages() {
+    public String getUrlJson(boolean includeEmptyAsset) {
         JsonArray rootJsonArray = new JsonArray();
         for (Map.Entry<String, WebPageContainer> entry : webPageHashMap.entrySet()) {
             WebPageContainer webPageContainer = entry.getValue();
+            if(webPageContainer.getAssets().length == 0)
+                continue;
             JsonObject mainObject = new JsonObject();
             mainObject.addProperty("url", entry.getKey());
             JsonArray assets = new JsonArray();

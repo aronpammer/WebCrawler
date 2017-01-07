@@ -14,13 +14,15 @@ public class CrawlerConfig {
     private final String userAgent;
     private final URL baseUrl;
 
-    public CrawlerConfig(String rawBaseUrl, AddressStorerInterface addressStorer, ParserInterface parser, String userAgent, int maxDepth) throws MalformedURLException {
+    private final int timeout;
+    public CrawlerConfig(String rawBaseUrl, AddressStorerInterface addressStorer, ParserInterface parser, String userAgent, int maxDepth, int timeout) throws MalformedURLException {
         this.rawBaseUrl = rawBaseUrl;
         this.baseUrl = new URL(rawBaseUrl);
         this.maxDepth = maxDepth;
         this.addressStorer = addressStorer;
         this.userAgent = userAgent;
         this.parser = parser;
+        this.timeout = timeout;
     }
 
     public String getRawBaseUrl() {
@@ -45,5 +47,9 @@ public class CrawlerConfig {
 
     public int getMaxDepth() {
         return maxDepth;
+    }
+
+    public int getTimeout() {
+        return timeout;
     }
 }
