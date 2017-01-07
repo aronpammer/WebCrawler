@@ -8,6 +8,8 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +30,7 @@ public class Crawler {
             System.out.println(crawlerConfig.getAddressStorer().getUrlJson(false));
             try {
                 System.out.println("Parsing website: " + siteInformation.getSite());
-                logger.log(Level.INFO, "Parsing website: " + siteInformation.getSite());
+
                 parseWebsite(siteInformation);
             } catch (IOException e) {
                 logger.log(Level.SEVERE, "Error while getting url: " + siteInformation.getSite() + " " + e.getMessage());
@@ -101,13 +103,17 @@ public class Crawler {
     }
 
     private void parseWebsite(SiteInformation siteInformation) throws WrongInitialWebPageException, IOException {
+        logger.log(Level.INFO, "Parsing website: " + siteInformation.getSite());
+        logger.log(Level.INFO, "Sending GET request");
         Connection connection = getConnection(siteInformation.getSite());
         //getting the actual html
         Connection.Response response = connection.method(Connection.Method.GET).ignoreContentType(false).timeout(crawlerConfig.getTimeout()).execute();
 
         String[] urls = crawlerConfig.getParser().getUrls(response.parse());
-        //System.out.println(Arrays.toString(urls));
+
         for (String url : urls) {
+            if(crawlerConfig.isOptimistUrlChecking() && !crawlerConfig.getBaseUrl().getHost().equals(getHostName(url)))
+                continue;
 
             if (this.handleUrlExists(url, siteInformation.getSite()))
                 continue;
@@ -145,5 +151,15 @@ public class Crawler {
 
     private Connection getConnection(String url) {
         return Jsoup.connect(url).method(Connection.Method.HEAD).userAgent(crawlerConfig.getUserAgent()).timeout(crawlerConfig.getTimeout());
+    }
+
+    private String getHostName(String url)
+    {
+        try {
+            URI uri = new URI(url);
+            return uri.getHost();
+        } catch (URISyntaxException e) {
+            return null;
+        }
     }
 }

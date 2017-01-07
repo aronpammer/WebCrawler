@@ -21,6 +21,7 @@ public class Main {
         options.addOption("maxdepth", true, "Maximum depth");
         options.addOption("timeout", true, "Timeout to use while loading the websites");
         options.addOption("verbose", false, "Output log messages");
+        options.addOption("optimistic", false, "Optimistic URL checking; don't add URLs to the queue that isn't in the same domain/subdomain");
         return options;
     }
 
@@ -33,6 +34,9 @@ public class Main {
             String userAgent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36";
             int maxDepth = 5;
             int timeout = 3000;
+
+            boolean optimistUrlChecking = cmd.hasOption("optimist");
+
             if(cmd.hasOption("website"))
                 website = cmd.getOptionValue("website");
             else
@@ -54,7 +58,7 @@ public class Main {
                 globalLogger.setLevel(java.util.logging.Level.OFF);
             }
 
-            CrawlerConfig crawlerConfig = new CrawlerConfig(website, new HashAddressStorer(), new QuickParser(), userAgent, maxDepth, timeout);
+            CrawlerConfig crawlerConfig = new CrawlerConfig(website, new HashAddressStorer(), new QuickParser(), userAgent, optimistUrlChecking, maxDepth, timeout);
             Crawler crawler = new Crawler(crawlerConfig);
             String result = crawler.retrieveSiteAddresses();
             System.out.println(result);

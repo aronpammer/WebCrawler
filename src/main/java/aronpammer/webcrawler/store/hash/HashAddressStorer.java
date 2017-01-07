@@ -110,7 +110,7 @@ public class HashAddressStorer implements AddressStorerInterface
         JsonArray rootJsonArray = new JsonArray();
         for (Map.Entry<String, WebPageContainer> entry : webPageHashMap.entrySet()) {
             WebPageContainer webPageContainer = entry.getValue();
-            if(webPageContainer.getAssets().length == 0)
+            if(!includeEmptyAsset && webPageContainer.getAssets().length == 0)
                 continue;
             JsonObject mainObject = new JsonObject();
             mainObject.addProperty("url", entry.getKey());

@@ -47,6 +47,7 @@ Flags:
 -maxdepth <the maximum level of depth while crawling> - optional (default: 5)
 -timeout <the timeout in milliseconds for loading the websites> - optional (default: 5000)
 -verbose - print out log messages - optional
+-optimistic - optimistic URL checking; don't add URLs to the queue that isn't in the same domain/subdomain
 example:
 $ java -jar <name of .jar file> -website "http://www.example.com/" -useragent "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36" -maxdepth 2 -timout 3000 -verbose
 ```
@@ -76,7 +77,9 @@ To find out the I used the jsoup library that handles all the redirects and gets
 This way I could easily determine the content hiding under that url by reading out the Content-Type header information. 
 (that is, if it exists. if not, then I send a GET request to check the file content)
 
-#### Do I include an URL that is in another subdomain/domain, but forwards to the same domain as the initial one?
+#### Include an URL that is in another subdomain/domain, but forwards to the same domain as the initial one?
 Using the same example as above, if the goo.gl/abcd redirects me to the initial domain, the application includes the final redirected URL (not the original).
 
 Moreover, if an asset was found on a webpage (even if the asset's domain was not the same as the initial domain) I decided to include that in the result set.
+
+### Add the "-optimistic" flag to only add URLs to the queue that is in the same domain/subdomain
