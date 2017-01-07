@@ -14,16 +14,17 @@ import java.util.logging.Logger;
 
 public class Main {
 
-    public static Options setupOptions()
+    private static Options setupOptions()
     {
         Options options = new Options();
         options.addOption("website", true, "The starting URL");
         options.addOption("useragent", true, "The user agent to use to load the websites");
-        options.addOption("maxdepth", true, "Maximum depth");
+        options.addOption("maxdepth", true, "The maximum level of depth while crawling");
         options.addOption("timeout", true, "Timeout to use while loading the websites");
         options.addOption("verbose", false, "Output log messages");
         options.addOption("optimistic", false, "Optimistic URL checking; don't add URLs to the queue that isn't in the same domain/subdomain");
         options.addOption("keephashtags", false, "An url with a different hashtag at the end is the same url");
+        options.addOption("?", "help", false, "Print this message and exit");
         return options;
     }
 
@@ -31,7 +32,14 @@ public class Main {
 
         try {
             CommandLineParser parser = new BasicParser();
-            CommandLine cmd = parser.parse(setupOptions(), args);
+            Options options = setupOptions();
+            CommandLine cmd = parser.parse(options, args);
+            if(cmd.hasOption("help"))
+            {
+                HelpFormatter helpFormatter = new HelpFormatter();
+                helpFormatter.printHelp("WebCrawler", options, true);
+                return;
+            }
             String website;
             String userAgent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36";
             int maxDepth = 5;

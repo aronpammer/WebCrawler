@@ -41,14 +41,19 @@ $ mv build/libs/WebCrawler-1.2.jar ./WebCrawler.jar
 #### Running the created/prebuilt jar file (make sure you are still in the project root folder)
 ```
 $ java -jar <name of .jar file> <flags>
-Flags:
--website <url of the website> - required
--useragent <user agent to use to load the websites> - optional
--maxdepth <the maximum level of depth while crawling> - optional (default: 5)
--timeout <the timeout in milliseconds for loading the websites> - optional (default: 5000)
--verbose = print out log messages - optional
--optimistic = optimistic URL checking; don't add URLs to the queue that isn't in the same domain/subdomain - optional
--keephashtags = An url with a different hashtag at the end is the same url - optional
+usage: WebCrawler [-?] [-keephashtags] [-maxdepth <arg>] [-optimistic]
+       [-timeout <arg>] [-useragent <arg>] [-verbose] [-website <arg>]
+ -?,--help          Print this message and exit
+ -keephashtags      An url with a different hashtag at the end is the same
+                    url
+ -maxdepth <arg>    Maximum depth
+ -optimistic        Optimistic URL checking; don't add URLs to the queue
+                    that isn't in the same domain/subdomain
+ -timeout <arg>     Timeout to use while loading the websites
+ -useragent <arg>   The user agent to use to load the websites
+ -verbose           Output log messages
+ -website <arg>     The starting URL - REQUIRED
+
 example:
 $ java -jar <name of .jar file> -website "http://www.example.com/" -useragent "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36" -maxdepth 2 -timout 3000 -verbose
 ```
@@ -57,7 +62,7 @@ $ java -jar <name of .jar file> -website "http://www.example.com/" -useragent "M
 ![flowchart](https://raw.githubusercontent.com/velvetz7/WebCrawler/master/flowchart.png)
 
 ### Project decisions
-The first thing I had in mind while developing is to be as object oriented as possible and to be able to expand the application later on. 
+The first thing I had in mind while developing is to be as object oriented as possible to be able to expand the application later on.
 The current project uses HashMaps and HashSets to efficiently store the informations about the websites, 
 however this can be changed by creating a class that implements the AddressStorerInterface and giving that to CrawlConfig. 
 One possible extension could be to use an sql or no-sql database to store the urls.

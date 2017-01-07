@@ -1,14 +1,8 @@
 package aronpammer.webcrawler.parser;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
 
 public class QuickParser implements ParserInterface {
     @Override

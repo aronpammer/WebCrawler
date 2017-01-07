@@ -17,7 +17,6 @@ public class SiteInformation
         this(site, parentSite, 0);
     }
 
-
     public String getSite() {
         return site;
     }

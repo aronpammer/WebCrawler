@@ -31,10 +31,9 @@ public class HashAddressStorer implements AddressStorerInterface
     @Override
     public void storeWebPage(SiteInformation siteInformation) {
         String webPageUrl = siteInformation.getSite();
-
+        logger.log(Level.INFO, "Storing webpage: " + webPageUrl);
         webPageHashMap.put(webPageUrl, new WebPageContainer());
         webPageQueue.add(siteInformation);
-        logger.log(Level.INFO, "Storing webpage: " + webPageUrl);
     }
 
     @Override

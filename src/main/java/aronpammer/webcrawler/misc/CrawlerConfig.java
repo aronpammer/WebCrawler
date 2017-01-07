@@ -61,7 +61,7 @@ public class CrawlerConfig {
         return optimistUrlChecking;
     }
 
-    public boolean isKeepHashtags() {
+    public boolean keepHashtags() {
         return keepHashtags;
     }
 }

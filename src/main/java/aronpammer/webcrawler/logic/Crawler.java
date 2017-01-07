@@ -115,7 +115,7 @@ public class Crawler {
             if(crawlerConfig.isOptimistUrlChecking() && !crawlerConfig.getBaseUrl().getHost().equals(realURL.getHost()))
                 continue;
 
-            if(!crawlerConfig.isKeepHashtags())
+            if(!crawlerConfig.keepHashtags())
                 url = url.replace("#" + realURL.getRef(), "");
 
             if (this.handleUrlExists(url, siteInformation.getSite()))
@@ -139,7 +139,6 @@ public class Crawler {
 
         switch (urlType) {
             case Error:
-                return true;
             case WebPage:
                 // no need to fetch again
                 return true;
