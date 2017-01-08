@@ -94,6 +94,7 @@ public class Crawler {
                     //      for more results getHost is used here.
                     if (siteInformation.getCurrentDepth() > crawlerConfig.getMaxDepth()
                             || !responseURL.getHost().equals(crawlerConfig.getBaseUrl().getHost())) {
+                        crawlerConfig.getAddressStorer().storeError(siteInformation);
                         continue;
                     }
                     crawlerConfig.getAddressStorer().storeWebPage(siteInformation);
