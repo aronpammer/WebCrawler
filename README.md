@@ -25,6 +25,9 @@ For example:
 
 ### Installation - UNIX
   - Clone/Download project
+```
+git clone https://github.com/velvetz7/WebCrawler.git
+```
   - Make sure that the correct java version (1.8+) is installed on your computer
   - In terminal go into the project root folder
   - [Create a .jar file (you need to have gradle [2.14+])](#creating-a-jar-file) and/or
@@ -35,7 +38,7 @@ For example:
 
 ```
 $ gradle jar
-$ mv build/libs/WebCrawler-1.2.jar ./WebCrawler.jar
+$ mv build/libs/WebCrawler-1.0.jar ./WebCrawler.jar
 ```
 
 #### Running the created/prebuilt jar file (make sure you are still in the project root folder)
@@ -44,9 +47,8 @@ $ java -jar <name of .jar file> <flags>
 usage: WebCrawler [-?] [-keephashtags] [-maxdepth <arg>] [-optimistic]
        [-timeout <arg>] [-useragent <arg>] [-verbose] [-website <arg>]
  -?,--help          Print this message and exit
- -keephashtags      An url with a different hashtag at the end is the same
-                    url
- -maxdepth <arg>    Maximum depth (default: unlimited)
+ -keephashtags      An url with a different hashtag at the end is a different url
+ -maxdepth <arg>    Maximum depth (default: 99999)
  -optimistic        Optimistic URL checking; don't add URLs to the queue
                     that isn't in the same domain/subdomain
  -timeout <arg>     Timeout to use while loading the websites (default: 5000)
@@ -55,7 +57,7 @@ usage: WebCrawler [-?] [-keephashtags] [-maxdepth <arg>] [-optimistic]
  -website <arg>     The starting URL - REQUIRED
 
 example (recommended):
-$ java -jar <name of .jar file> -website "http://www.example.com/"
+$ java -jar WebCrawler.jar -website "http://www.example.com/" -optimistic
 ```
 
 ### Flowchart
@@ -90,13 +92,13 @@ Uses both QuickParser and ComplexParser. Slow (avg 6ms / page), but very accurat
 Let's say there is this URL on the website: goo.gl/abcd.
 **There is no way to know whether this is an *asset* or an *html site* just by looking at the url.**
 
-To find out the I used the jsoup library that handles all the redirects and gets the final URL. (To save some bandwidth I also made sure to only send HEAD requests.)
+To find out I used the jsoup library that handles all the redirects and gets the final URL. (To save some bandwidth I also made sure to only send HEAD requests.)
 
 This way I could easily determine the content hiding under that url by reading out the Content-Type header information. 
 (that is, if it exists. if not, then I send a GET request to check the file content)
 
-#### Include an URL that is in another subdomain/domain, but forwards to the same domain as the initial one?
-Using the same example as above, if the goo.gl/abcd redirects me to the initial domain, the application includes the final redirected URL (not the original).
+#### Include an URL that is in another subdomain/domain, but redirects to the same domain as the initial one?
+Using the same example as above, if the goo.gl/abcd redirects me to the initial domain, the application includes the URL it was redirected to (not the original).
 
 Moreover, if an asset was found on a webpage (even if the asset's domain was not the same as the initial domain) I decided to include that in the result set.
 

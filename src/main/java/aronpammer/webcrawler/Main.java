@@ -22,7 +22,7 @@ public class Main {
         options.addOption("timeout", true, "Timeout to use while loading the websites");
         options.addOption("verbose", false, "Output log messages");
         options.addOption("optimistic", false, "Optimistic URL checking; don't add URLs to the queue that isn't in the same domain/subdomain");
-        options.addOption("keephashtags", false, "An url with a different hashtag at the end is the same url");
+        options.addOption("keephashtags", false, "An url with a different hashtag at the end is a different url");
         options.addOption("?", "help", false, "Print this message and exit");
         return options;
     }
@@ -41,7 +41,7 @@ public class Main {
             }
             String website;
             String userAgent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36";
-            int maxDepth = Integer.MAX_VALUE;
+            int maxDepth = 99999;
             int timeout = 3000;
 
             boolean optimistUrlChecking = cmd.hasOption("optimistic");
