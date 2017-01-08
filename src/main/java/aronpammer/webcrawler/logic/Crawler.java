@@ -80,7 +80,7 @@ public class Crawler {
                 }
                 logger.log(Level.INFO, String.format("Content-Type: %s", response.contentType()));
                 //in case it is not an html file then classify it as an asset
-                if (response.contentType() != null && !response.contentType().contains("text/html")) {
+                if (response.contentType() != null && !response.contentType().toLowerCase().contains("text/html")) {
                     if (siteInformation.getParentSite() == null) throw new WrongInitialWebPageException();
 
                     //using (maxdepth + 1) here to be able to fetch the assets of a certain page with depth = maxdepth
