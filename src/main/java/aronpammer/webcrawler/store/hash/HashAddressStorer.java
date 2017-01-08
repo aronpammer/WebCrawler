@@ -31,7 +31,8 @@ public class HashAddressStorer implements AddressStorerInterface
     @Override
     public void storeWebPage(SiteInformation siteInformation) {
         String webPageUrl = siteInformation.getSite();
-        logger.log(Level.INFO, "Storing webpage: " + webPageUrl);
+
+        logger.log(Level.INFO, String.format("Storing webpage: %s", webPageUrl));
         webPageHashMap.put(webPageUrl, new WebPageContainer());
         webPageQueue.add(siteInformation);
     }
@@ -41,7 +42,7 @@ public class HashAddressStorer implements AddressStorerInterface
         String webPageUrl = siteInformation.getParentSite();
         String assetUrl = siteInformation.getSite();
 
-        logger.log(Level.INFO, "Storing asset, webpageurl: " + webPageUrl + " asseturl: " + assetUrl);
+        logger.log(Level.INFO, String.format("Storing asset, webpageurl: %s asseturl: %s", webPageUrl, assetUrl));
         webPageHashMap.get(webPageUrl).addAsset(assetUrl);
         if(!assetHashSet.contains(assetUrl)) {
             assetHashSet.add(assetUrl);
@@ -52,13 +53,13 @@ public class HashAddressStorer implements AddressStorerInterface
     public void storeError(SiteInformation siteInformation) {
         String currentUrl = siteInformation.getSite();
 
-        logger.log(Level.INFO, "Storing error: " + currentUrl);
+        logger.log(Level.INFO, String.format("Storing error: %s", currentUrl));
         errorHashSet.add(currentUrl);
     }
 
     @Override
     public void storeRedirection(String from, String to) {
-        logger.log(Level.INFO, "Storing redirection, from: " + from + " to: " + to);
+        logger.log(Level.INFO, String.format("Storing redirection, from: %s to: %s", from, to));
         redirections.put(from, to);
     }
 
@@ -74,7 +75,7 @@ public class HashAddressStorer implements AddressStorerInterface
     }
 
     @Override
-    public void storeQueue(SiteInformation siteInformation) {
+    public void storeUrlQueue(SiteInformation siteInformation) {
         urlQueue.add(siteInformation);
     }
 
@@ -105,12 +106,10 @@ public class HashAddressStorer implements AddressStorerInterface
 
 
     @Override
-    public String getUrlJson(boolean includeEmptyAsset) {
+    public String getUrlJson() {
         JsonArray rootJsonArray = new JsonArray();
         for (Map.Entry<String, WebPageContainer> entry : webPageHashMap.entrySet()) {
             WebPageContainer webPageContainer = entry.getValue();
-            if(!includeEmptyAsset && webPageContainer.getAssets().length == 0)
-                continue;
             JsonObject mainObject = new JsonObject();
             mainObject.addProperty("url", entry.getKey());
             JsonArray assets = new JsonArray();

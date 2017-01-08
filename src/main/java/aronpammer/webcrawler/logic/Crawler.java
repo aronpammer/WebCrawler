@@ -22,6 +22,12 @@ public class Crawler {
         this.crawlerConfig = crawlerConfig;
     }
 
+
+    /**
+     * Handles the website urls stored in the WebSite Queue.
+     * @return String containing the final result in Json format
+     * @throws WrongInitialWebPageException
+     */
     public String retrieveSiteAddresses() throws WrongInitialWebPageException {
         crawlerConfig.getAddressStorer().storeWebPage(new SiteInformation(crawlerConfig.getRawBaseUrl(), null, 0));
         SiteInformation siteInformation;
@@ -29,15 +35,21 @@ public class Crawler {
             try {
                 parseWebsite(siteInformation);
             } catch (IOException e) {
-                logger.log(Level.SEVERE, "Error while getting url: " + siteInformation.getSite() + " " + e.getMessage());
+                logger.log(Level.SEVERE, String.format("Error while getting url: %s %s", siteInformation.getSite(), e.getMessage()));
                 crawlerConfig.getAddressStorer().storeError(siteInformation);
             }
-            parseUrls();
+            handleUrls();
         }
-        return crawlerConfig.getAddressStorer().getUrlJson(true);
+        return crawlerConfig.getAddressStorer().getUrlJson();
     }
 
-    private void parseUrls() throws WrongInitialWebPageException {
+    /**
+     * Handles the urls stored in the Url Queue.
+     * Saves the urls based on their Content-Type property, if it was an html adds it to the webpage queue.
+     * Eliminates duplicate urls.
+     * @throws WrongInitialWebPageException
+     */
+    private void handleUrls() throws WrongInitialWebPageException {
         SiteInformation siteInformation;
         while ((siteInformation = crawlerConfig.getAddressStorer().getNextInUrlQueue()) != null) {
             logger.log(Level.INFO,
@@ -66,7 +78,7 @@ public class Crawler {
                     if (this.handleUrlExists(siteInformation.getSite(), siteInformation.getParentSite()))
                         continue;
                 }
-                logger.log(Level.INFO, "Content-Type: " + response.contentType());
+                logger.log(Level.INFO, String.format("Content-Type: %s", response.contentType()));
                 //in case it is not an html file then classify it as an asset
                 if (response.contentType() != null && !response.contentType().contains("text/html")) {
                     if (siteInformation.getParentSite() == null) throw new WrongInitialWebPageException();
@@ -92,14 +104,20 @@ public class Crawler {
                 throw e;
             }
             catch (Exception e) {
-                logger.log(Level.SEVERE, "Error while getting url: " + siteInformation.getSite() + " " + e.getMessage());
+                logger.log(Level.SEVERE, String.format("Error while getting url: %s %s", siteInformation.getSite(), e.getMessage()));
                 crawlerConfig.getAddressStorer().storeError(siteInformation);
             }
         }
     }
 
+    /**
+     * Parses the website and adds it to the queue
+     * @param siteInformation The website to parse (@site variable)
+     * @throws WrongInitialWebPageException
+     * @throws IOException
+     */
     private void parseWebsite(SiteInformation siteInformation) throws WrongInitialWebPageException, IOException {
-        logger.log(Level.INFO, "Parsing website: " + siteInformation.getSite());
+        logger.log(Level.INFO, String.format("Parsing website: %s", siteInformation.getSite()));
         logger.log(Level.INFO, "Sending GET request");
         Connection connection = getConnection(siteInformation.getSite());
         //getting the actual html
@@ -121,21 +139,34 @@ public class Crawler {
             if (this.handleUrlExists(url, siteInformation.getSite()))
                 continue;
 
-            crawlerConfig.getAddressStorer().storeQueue(new SiteInformation(url, siteInformation.getSite(), siteInformation.getCurrentDepth() + 1));
+            crawlerConfig.getAddressStorer().storeUrlQueue(new SiteInformation(url, siteInformation.getSite(), siteInformation.getCurrentDepth() + 1));
         }
     }
 
+    /**
+     * Checks if the urlBegin is not the same as urlEnd
+     * @param urlBegin The initial url
+     * @param urlEnd The url received in the final response
+     * @return boolean
+     */
     private boolean didRedirect(String urlBegin, String urlEnd) {
         return !urlBegin.equals(urlEnd);
     }
 
+    /**
+     * Checks if the url already exists in the database and handles it.
+     * @param currentSite The current url we are checking
+     * @param parentSite The parent url that contains the url we are checking
+     * @return boolean True if the currentSite already exists in the database
+     * @throws WrongInitialWebPageException
+     */
     private boolean handleUrlExists(String currentSite, String parentSite) throws WrongInitialWebPageException {
         // get if there was a redirection from this url to another url before (if there was a redirection we have already visited that site)
         currentSite = crawlerConfig.getAddressStorer().getRedirection(currentSite);
 
         AddressStorerInterface.UrlType urlType = crawlerConfig.getAddressStorer().doesUrlExists(currentSite);
         if(urlType != AddressStorerInterface.UrlType.Unknown)
-            logger.log(Level.INFO, "URL already visited, type: " + urlType.toString());
+            logger.log(Level.INFO, String.format("URL already visited, type: %s", urlType.toString()));
 
         switch (urlType) {
             case Error:
@@ -143,18 +174,28 @@ public class Crawler {
                 // no need to fetch again
                 return true;
             case Asset:
-                // in case of an asset, save it
                 if (parentSite == null) throw new WrongInitialWebPageException();
+                // in case of an asset, save it
                 crawlerConfig.getAddressStorer().storeAsset(new SiteInformation(currentSite, parentSite));
                 return true;
         }
         return false;
     }
 
+    /**
+     * Creates the connection and returns it
+     * @param url The url to connect to
+     * @return Connection
+     */
     private Connection getConnection(String url) {
-        return Jsoup.connect(url).method(Connection.Method.HEAD).userAgent(crawlerConfig.getUserAgent()).timeout(crawlerConfig.getTimeout());
+        return Jsoup.connect(url).userAgent(crawlerConfig.getUserAgent()).timeout(crawlerConfig.getTimeout());
     }
 
+    /**
+     * Checks url formatting and returns an URL object if the URL format is correct, null otherwise
+     * @param url The url to check and convert
+     * @return URL
+     */
     private URL getURL(String url)
     {
         try {

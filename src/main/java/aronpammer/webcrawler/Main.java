@@ -4,7 +4,6 @@ import aronpammer.webcrawler.exception.WrongInitialWebPageException;
 import aronpammer.webcrawler.logic.Crawler;
 import aronpammer.webcrawler.misc.CrawlerConfig;
 import aronpammer.webcrawler.parser.ComplexParser;
-import aronpammer.webcrawler.parser.QuickParser;
 import aronpammer.webcrawler.store.hash.HashAddressStorer;
 import org.apache.commons.cli.*;
 
