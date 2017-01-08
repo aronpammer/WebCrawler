@@ -41,7 +41,7 @@ public class Main {
             }
             String website;
             String userAgent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36";
-            int maxDepth = 5;
+            int maxDepth = Integer.MAX_VALUE;
             int timeout = 3000;
 
             boolean optimistUrlChecking = cmd.hasOption("optimistic");
@@ -79,7 +79,7 @@ public class Main {
         } catch (NumberFormatException e) {
             System.out.println("Wrong parameter format");
         } catch (ParseException e) {
-            System.out.println("Command line parse error: " + e.getMessage());
+            System.out.printf("Command line parse error: %s%n", e.getMessage());
         }
 
     }

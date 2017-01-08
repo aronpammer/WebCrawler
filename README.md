@@ -46,16 +46,16 @@ usage: WebCrawler [-?] [-keephashtags] [-maxdepth <arg>] [-optimistic]
  -?,--help          Print this message and exit
  -keephashtags      An url with a different hashtag at the end is the same
                     url
- -maxdepth <arg>    Maximum depth
+ -maxdepth <arg>    Maximum depth (default: unlimited)
  -optimistic        Optimistic URL checking; don't add URLs to the queue
                     that isn't in the same domain/subdomain
- -timeout <arg>     Timeout to use while loading the websites
- -useragent <arg>   The user agent to use to load the websites
+ -timeout <arg>     Timeout to use while loading the websites (default: 5000)
+ -useragent <arg>   The user agent to use to load the websites (default: "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36")
  -verbose           Output log messages
  -website <arg>     The starting URL - REQUIRED
 
-example:
-$ java -jar <name of .jar file> -website "http://www.example.com/" -useragent "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36" -maxdepth 2 -timout 3000 -verbose
+example (recommended):
+$ java -jar <name of .jar file> -website "http://www.example.com/"
 ```
 
 ### Flowchart
