@@ -1,5 +1,5 @@
 # Web Crawler
-[link]("http://aronpammer.me/"){:target="_blank"}
+[Google] (http://www.google.com){target="_blank"}
 This Web Crawler is a simple java application to crawl a given domain without crossing subdomains.
 Output: in JSON format listing the URLs of every static asset, grouped by page
 For example:
